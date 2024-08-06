@@ -4,41 +4,75 @@
 
 echo "Setting up your Zsh environment..."
 
+# Function to check and install Homebrew on macOS
+install_homebrew() {
+  if ! command -v brew &> /dev/null; then
+    echo "Homebrew is not installed. Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+}
+
+# Function to install a package if it's not already installed
+install_package() {
+  package_name="$1"
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if ! dpkg -s "$package_name" &> /dev/null; then
+      echo "$package_name is not installed. Installing $package_name..."
+      sudo apt update && sudo apt install "$package_name" -y
+    fi
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    install_homebrew
+    if ! brew list "$package_name" &> /dev/null; then
+      echo "$package_name is not installed. Installing $package_name..."
+      brew install "$package_name"
+    fi
+  else
+    echo "Unsupported OS type: $OSTYPE"
+    exit 1
+  fi
+}
+
 # Install Zsh if not installed
-if ! command -v zsh &> /dev/null; then
-  echo "Zsh is not installed. Installing Zsh..."
-  sudo apt update && sudo apt install zsh -y
-fi
+install_package "zsh"
 
 # Install Git if not installed
-if ! command -v git &> /dev/null; then
-  echo "Git is not installed. Installing Git..."
-  sudo apt install git -y
+install_package "git"
+
+install_package "zinit"
+
+# Ensure .zshrc and .p10k.zsh files exist
+echo "Copying Zsh configuration files to the home directory..."
+mkdir -p ~/zsh-setup
+
+
+
+# This is a basic .zshrc file.
+# Add your Zsh configuration settings here.
+
+if [ ! -f ~/zsh-setup/.zshrc ]; then
+  echo ".zshrc config not found."
 fi
 
-# Install Zinit if not already installed
-if [ ! -d "$HOME/.local/share/zinit" ]; then
-  echo "Installing Zinit..."
-  mkdir -p "$HOME/.local/share/zinit" && chmod g-rwX "$HOME/.local/share/zinit"
-  git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git"
+if [ -f ~/zsh-setup/.zshrc ]; then
+  cp -f ~/zsh-setup/.zshrc ~/.zshrc
 fi
 
-# Create symlinks for Zsh configuration
-echo "Creating symlinks for configuration files..."
-ln -sf ~/.zsh-configs/zsh-setup/.zshrc ~/.zshrc
-ln -sf ~/.zsh-configs/zsh-setup/.p10k.zsh ~/.p10k.zsh
+if [ ! -f ~/zsh-setup/.p10k.zsh ]; then
+  echo "Powerlevel10k config not found. You might need to run 'p10k configure' to create ~/.p10k.zsh"
+fi
 
-# Create directory for scripts if not exists
+if [ -f ~/zsh-setup/.p10k.zsh ]; then
+  cp -f ~/.zsh-configs/zsh-setup/.p10k.zsh ~/.p10k.zsh
+fi
+
+# Create directory for scripts if it doesn't exist and copy scripts
 mkdir -p ~/scripts
-
-# Copy custom scripts to the scripts directory
-cp -r ~/.zsh-configs/zsh-setup/scripts/* ~/scripts/
-
-# Source scripts
-echo "Sourcing custom scripts..."
-for script in ~/scripts/*.sh; do
-  source "$script"
-done
+if [ -d ~/zsh-setup/scripts ]; then
+  echo "Copying custom scripts to ~/scripts..."
+  cp -rf ~/zsh-setup/scripts/* ~/scripts/
+else
+  echo "No custom scripts directory found. Skipping script copying."
+fi
 
 # Install Powerlevel10k if not already installed
 if [ ! -d "$HOME/.local/share/zsh/powerlevel10k" ]; then
@@ -46,14 +80,14 @@ if [ ! -d "$HOME/.local/share/zsh/powerlevel10k" ]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.local/share/zsh/powerlevel10k
 fi
 
-# Load Powerlevel10k theme
+# Ensure Powerlevel10k is sourced in .zshrc
 if ! grep -q 'source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme' ~/.zshrc; then
   echo "source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme" >> ~/.zshrc
 fi
 
 # Install and load plugins using Zinit
 echo "Installing plugins using Zinit..."
-source ~/.local/share/zinit/zinit.git/zinit.zsh
+source ~/.local/share/zinit/zinit.zsh
 
 zinit light zdharma-continuum/fast-syntax-highlighting
 zinit light zsh-users/zsh-autosuggestions
@@ -70,6 +104,18 @@ zinit light-mode for \
 
 echo "Zsh environment setup complete!"
 
+# Ensure Zsh is listed as a valid shell
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  if ! grep -q "/usr/local/bin/zsh" /etc/shells; then
+    echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
+  fi
+
+  # On M1 Macs, Homebrew installs to a different location
+  if ! grep -q "/opt/homebrew/bin/zsh" /etc/shells; then
+    echo "/opt/homebrew/bin/zsh" | sudo tee -a /etc/shells
+  fi
+fi
+
 # Change default shell to Zsh
 if [ "$SHELL" != "$(which zsh)" ]; then
   echo "Changing default shell to Zsh..."
@@ -77,4 +123,4 @@ if [ "$SHELL" != "$(which zsh)" ]; then
 fi
 
 echo "Please restart your terminal session for changes to take effect."
-echo "please also install the correct font if not done so already: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
+echo "Please also install the correct font if not done so already: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
