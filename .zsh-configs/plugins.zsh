@@ -17,9 +17,6 @@ zinit light olivierverdier/zsh-git-prompt
 # Command history substring search
 zinit light zsh-users/zsh-history-substring-search
 
-#Enhances tab completion by integrating with fzf
-zinit light Aloxaf/fzf-tab
-
 
 # Theme: Powerlevel10k
 # zinit light romkatv/powerlevel10k
