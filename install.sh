@@ -12,7 +12,7 @@ if ! command -v git &> /dev/null; then
   sudo apt install git -y
 fi
 
-# Install Zinit
+# Install Zinit if not installed
 if [ ! -d "$HOME/.local/share/zinit" ]; then
   echo "Installing Zinit..."
   sh -c "$(curl -fsSL https://git.io/zinit-install)"
@@ -31,7 +31,7 @@ done
 echo "Zsh environment setup complete!"
 
 # Change default shell to Zsh
-if [ "$SHELL" != "/bin/zsh" ]; then
+if [ "$SHELL" != "$(which zsh)" ]; then
   echo "Changing default shell to Zsh..."
   chsh -s $(which zsh)
 fi
