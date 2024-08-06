@@ -12,17 +12,13 @@ This repository contains my custom Zsh configuration, including the Powerlevel10
 ## Directory Structure
 
 ```
-~/.dotfiles/
+~/zsh-setup/
 ├── .zshrc                     # Zsh configuration
 ├── .p10k.zsh                  # Powerlevel10k configuration
 ├── scripts/                   # Custom scripts
 │   ├── gitstatus.sh
 │   ├── speedtest.sh
 │   └── sysinfo.sh
-├── .zsh-configs/              # Additional Zsh configurations
-│   ├── aliases.zsh
-│   ├── plugins.zsh
-│   └── theme.zsh
 └── install.sh                 # Setup script
 ```
 
@@ -51,15 +47,15 @@ To set up this configuration on a new machine, follow these steps:
    Clone this repository into your home directory:
 
    ```bash
-   git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
+   git clone https://github.com/alamdave/zsh-setup.git ~/zsh-setup
    ```
 
 2. **Run the Install Script**
 
-   Navigate to the `~/.dotfiles` directory and run the setup script:
+   Navigate to the `zsh-setup` directory and run the setup script:
 
    ```bash
-   cd ~/.dotfiles
+   cd ~/zsh-setup
    ./install.sh
    ```
 
@@ -91,9 +87,8 @@ If the `install.sh` script doesn't automatically complete the setup, you can man
 - **Create Symlinks**
 
   ```bash
-  ln -sf ~/.dotfiles/.zshrc ~/.zshrc
-  ln -sf ~/.dotfiles/.p10k.zsh ~/.p10k.zsh
-  ln -sf ~/.dotfiles/.zsh-configs ~/ 
+  ln -sf ~/zsh-setup/.zshrc ~/.zshrc
+  ln -sf ~/zsh-setup/.p10k.zsh ~/.p10k.zsh
   ```
 
 - **Source Scripts**
@@ -101,7 +96,7 @@ If the `install.sh` script doesn't automatically complete the setup, you can man
   Add the following line to your `.zshrc`:
 
   ```zsh
-  for script in ~/.dotfiles/scripts/*.sh; do
+  for script in ~/zsh-setup/scripts/*.sh; do
     source "$script"
   done
   ```
@@ -112,23 +107,17 @@ If the `install.sh` script doesn't automatically complete the setup, you can man
 
 - **Custom Scripts**: You can run any of the scripts located in the `scripts/` directory directly from the command line.
 
-- **Aliases**: Additional useful aliases are defined in `aliases.zsh`.
+- **Aliases**: Additional useful aliases are defined in `.zshrc`.
 
 ## Troubleshooting
 
 ### Common Issues
 
-- **Anonymous Commits**: If your commits appear as anonymous, configure your Git user information:
-
-  ```bash
-  git config --global user.name "Your Name"
-  git config --global user.email "your.email@example.com"
-  ```
 
 - **Permission Denied**: If you encounter permission issues, ensure your scripts are executable:
 
   ```bash
-  chmod +x ~/.dotfiles/scripts/*.sh
+  chmod +x ~/zsh-setup/scripts/*.sh
   ```
 
 - **Zsh Not Default Shell**: Make sure to change your default shell to Zsh with the `chsh` command.
