@@ -86,24 +86,6 @@ if ! grep -q 'source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme' ~
   echo "source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme" >> ~/.zshrc
 fi
 
-# Install and load plugins using Zinit
-echo "Installing plugins using Zinit..."
-source ~/.local/share/zinit/zinit.zsh
-
-zinit light zdharma-continuum/fast-syntax-highlighting
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-completions
-zinit light olivierverdier/zsh-git-prompt
-zinit light zsh-users/zsh-history-substring-search
-
-# Load annexes
-zinit light-mode for \
-  zdharma-continuum/zinit-annex-as-monitor \
-  zdharma-continuum/zinit-annex-bin-gem-node \
-  zdharma-continuum/zinit-annex-patch-dl \
-  zdharma-continuum/zinit-annex-rust
-
-echo "Zsh environment setup complete!"
 
 # Ensure Zsh is listed as a valid shell
 if [[ "$OSTYPE" == "darwin"* ]]; then

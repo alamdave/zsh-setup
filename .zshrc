@@ -41,12 +41,12 @@ alias zsh='code ~/.zshrc'
 alias reload='source ~/.zshrc'
 
 # Load Znap
-if [[ ! -d "$HOME/plugins/.znap" ]]; then
-    echo "Installing Znap..."
-    git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git "$HOME/.znap"
-fi
-
-source "$HOME/plugins/.znap/znap.zsh"
+# Download Znap, if it's not there yet.
+[[ -r ~/Repos/znap/znap.zsh ]] ||
+    git clone --depth 1 -- \
+        https://github.com/marlonrichert/zsh-snap.git ~/Repos/znap
+        
+source ~/Repos/znap/znap.zsh  # Start Znap
 
 # Load plugins using Znap
 znap source marlonrichert/zsh-autocomplete
