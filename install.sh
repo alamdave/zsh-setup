@@ -62,7 +62,7 @@ if [ ! -f ~/zsh-setup/.p10k.zsh ]; then
 fi
 
 if [ -f ~/zsh-setup/.p10k.zsh ]; then
-  cp -f ~/.zsh-configs/zsh-setup/.p10k.zsh ~/.p10k.zsh
+  cp -f ~/zsh-setup/.p10k.zsh ~/.p10k.zsh
 fi
 
 # Create directory for scripts if it doesn't exist and copy scripts
