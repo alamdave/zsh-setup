@@ -1,7 +1,3 @@
-#!/bin/bash
-
-# Save this script as install.sh and make it executable with chmod +x install.sh
-
 echo "Setting up your Zsh environment..."
 
 # Function to check and install Homebrew on macOS
@@ -11,6 +7,12 @@ install_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 }
+
+# Download Znap, if it's not there yet.
+[[ -r ~/Repos/znap/znap.zsh ]] ||
+    git clone --depth 1 -- \
+        https://github.com/marlonrichert/zsh-snap.git ~/Repos/znap
+source ~/Repos/znap/znap.zsh  # Start Znap
 
 # Function to install a package if it's not already installed
 install_package() {
@@ -38,7 +40,6 @@ install_package "zsh"
 # Install Git if not installed
 install_package "git"
 
-install_package "zinit"
 
 # Ensure .zshrc and .p10k.zsh files exist
 echo "Copying Zsh configuration files to the home directory..."

@@ -40,29 +40,27 @@ alias update='sudo apt update && sudo apt upgrade -y' # Update system packages
 alias zsh='code ~/.zshrc'
 alias reload='source ~/.zshrc'
 
-# Load Zinit
-if [[ ! -f $HOME/.local/share/zinit/zinit.zsh ]]; then
-    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
-    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
-        print -P "%F{33} %F{34}Installation successful.%f%b" || \
-        print -P "%F{160} The clone has failed.%f%b"
+# Load Znap
+if [[ ! -d "$HOME/plugins/.znap" ]]; then
+    echo "Installing Znap..."
+    git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git "$HOME/.znap"
 fi
 
-source "$HOME/.local/share/zinit/zinit.zsh"
+source "$HOME/plugins/.znap/znap.zsh"
 
-# Load plugins
-zinit light zdharma-continuum/fast-syntax-highlighting     # Syntax highlighting for commands
-zinit light zsh-users/zsh-autosuggestions                  # Command-line suggestions based on history
-zinit light zsh-users/zsh-completions                      # Additional command completions
-zinit light olivierverdier/zsh-git-prompt                  # Git prompt enhancements
-zinit light zsh-users/zsh-history-substring-search         # Command history substring search
+# Load plugins using Znap
+znap source marlonrichert/zsh-autocomplete
+znap source zdharma-continuum/fast-syntax-highlighting
+znap source zsh-users/zsh-autosuggestions
+znap source zsh-users/zsh-completions
+znap source olivierverdier/zsh-git-prompt
+znap source zsh-users/zsh-history-substring-search
 
 # Load Powerlevel10k theme
 if [[ -f ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme ]]; then
     source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme
 else
-    zinit light romkatv/powerlevel10k
+    znap source romkatv/powerlevel10k
     source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme
 fi
 
@@ -82,15 +80,4 @@ export PROMPT='%n@%m %1~ %# '
 # Load Powerlevel10k configuration
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Load a few important annexes, without Turbo
-zinit light-mode for \
-    zdharma-continuum/zinit-annex-as-monitor \
-    zdharma-continuum/zinit-annex-bin-gem-node \
-    zdharma-continuum/zinit-annex-patch-dl \
-    zdharma-continuum/zinit-annex-rust
-
-# End of Zinit's installer chunk
-
-# Autoload Zinit completion
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
+# End of .zshrc
