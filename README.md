@@ -148,7 +148,9 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 - [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for the amazing prompt theme.
 - [Zinit](https://github.com/zdharma-continuum/zinit) for plugin management.
-###Plugins
+
+## Plugins
+
 - [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete) by marlonrichert
 - [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting) by zdharma-continuum
 - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) by zsh-users
