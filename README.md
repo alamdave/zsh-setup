@@ -18,7 +18,7 @@ This repository contains my custom Zsh configuration, including the Powerlevel10
 ├── scripts/                   # Custom scripts
 │   ├── gitstatus.sh
 │   ├── speedtest.sh
-│   └── sysinfo.sh
+│   └── updateGitZsh.sh
 └── install.sh                 # Setup script
 ```
 
