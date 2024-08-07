@@ -18,7 +18,7 @@ This repository contains my custom Zsh configuration, including the Powerlevel10
 ├── scripts/                   # Custom scripts
 │   ├── gitstatus.sh
 │   ├── speedtest.sh
-│   └── sysinfo.sh
+│   └── updateGitZsh.sh
 └── install.sh                 # Setup script
 ```
 
@@ -148,5 +148,14 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 - [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for the amazing prompt theme.
 - [Zinit](https://github.com/zdharma-continuum/zinit) for plugin management.
+
+## Plugins
+
+- [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete) by marlonrichert
+- [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting) by zdharma-continuum
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) by zsh-users
+- [zsh-completions](https://github.com/zsh-users/zsh-completions) by zsh-users
+- [zsh-git-prompt](https://github.com/olivierverdier/zsh-git-prompt) by olivierverdier
+- [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) by zsh-users
 
 Feel free to modify and expand this `README.md` to suit your specific setup and preferences. If you have any questions or need further assistance, please let me know!
