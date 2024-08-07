@@ -16,9 +16,13 @@ This repository contains my custom Zsh configuration, including the Powerlevel10
 ├── .zshrc                     # Zsh configuration
 ├── .p10k.zsh                  # Powerlevel10k configuration
 ├── scripts/                   # Custom scripts
-│   ├── gitstatus.sh
-│   ├── speedtest.sh
-│   └── updateGitZsh.sh
+│   ├── gitstatus.sh           # Detailed Git status
+│   ├── speedtest.sh           # Test internet Speed connection
+│   ├── updateGitZsh.sh        # Copy current .zshrc/.p10k.zsh and scripts to local git repo and push to remote
+│   ├── sysinfo.sh             # Display system information
+│   ├── createScript.sh        # creates or edit script in the ~/scripts/
+│   ├── activateEnv.sh         # Activate local python ENV, can enter customer VENV folder
+│   └── listScripts.sh         # List custom functions and files in ~/scripts/
 └── install.sh                 # Setup script
 ```
 
@@ -60,6 +64,7 @@ To set up this configuration on a new machine, follow these steps:
    ```
 
    This script will:
+
    - Install Zinit for managing plugins.
    - Create symlinks for your Zsh configuration files.
    - Source custom scripts.
@@ -112,7 +117,6 @@ If the `install.sh` script doesn't automatically complete the setup, you can man
 ## Troubleshooting
 
 ### Common Issues
-
 
 - **Permission Denied**: If you encounter permission issues, ensure your scripts are executable:
 
