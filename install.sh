@@ -1,29 +1,34 @@
 echo "Setting up your Zsh environment..."
 
+
+# Determine the OS type using uname
+OS_TYPE=$(uname)
+
 # Function to check and install Homebrew on macOS
 install_homebrew() {
-  if ! command -v brew &> /dev/null; then
+  if ! command -v brew >/dev/null 2>&1; then
     echo "Homebrew is not installed. Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
 }
 
+
 # Function to install a package if it's not already installed
 install_package() {
   package_name="$1"
-  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    if ! dpkg -s "$package_name" &> /dev/null; then
+  if [ "$OS_TYPE" = "Linux" ]; then
+    if ! dpkg -s "$package_name" >/dev/null 2>&1; then
       echo "$package_name is not installed. Installing $package_name..."
       sudo apt update && sudo apt install "$package_name" -y
     fi
-  elif [[ "$OSTYPE" == "darwin"* ]]; then
+  elif [ "$OS_TYPE" = "Darwin" ]; then
     install_homebrew
-    if ! brew list "$package_name" &> /dev/null; then
+    if ! brew list "$package_name" >/dev/null 2>&1; then
       echo "$package_name is not installed. Installing $package_name..."
       brew install "$package_name"
     fi
   else
-    echo "Unsupported OS type: $OSTYPE"
+    echo "Unsupported OS type: $OS_TYPE"
     exit 1
   fi
 }
@@ -81,8 +86,10 @@ if ! grep -q 'source ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme' ~
 fi
 
 
+echo "Zsh environment setup complete!"
+
 # Ensure Zsh is listed as a valid shell
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [ "$OS_TYPE" = "Darwin" ]; then
   if ! grep -q "/usr/local/bin/zsh" /etc/shells; then
     echo "/usr/local/bin/zsh" | sudo tee -a /etc/shells
   fi
@@ -96,8 +103,8 @@ fi
 # Change default shell to Zsh
 if [ "$SHELL" != "$(which zsh)" ]; then
   echo "Changing default shell to Zsh..."
-  chsh -s $(which zsh)
-fi
+  chsh -s "$(which zsh)"
+fig
 
 echo "Please restart your terminal session for changes to take effect."
 echo "Please also install the correct font if not done so already: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
