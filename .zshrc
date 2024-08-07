@@ -5,11 +5,11 @@ fi
 
 # Source all custom scripts
 if [[ -d ~/scripts ]]; then
-  echo "Sourcing custom scripts..."
   for script in ~/scripts/*.sh; do
     source "$script"
   done
 fi
+
 
 # General aliases
 alias ..='cd ..'              # Go up one directory
@@ -37,7 +37,7 @@ alias gca='git commit --amend'# Amend the last commit
 
 alias update='sudo apt update && sudo apt upgrade -y' # Update system packages
 
-alias zsh='code ~/.zshrc'
+alias czsh='code ~/.zshrc'
 alias reload='source ~/.zshrc'
 
 # Load Znap
@@ -49,12 +49,13 @@ alias reload='source ~/.zshrc'
 source ~/Repos/znap/znap.zsh  # Start Znap
 
 # Load plugins using Znap
-znap source marlonrichert/zsh-autocomplete
 znap source zdharma-continuum/fast-syntax-highlighting
 znap source zsh-users/zsh-autosuggestions
+znap source marlonrichert/zsh-autocomplete
 znap source zsh-users/zsh-completions
 znap source olivierverdier/zsh-git-prompt
 znap source zsh-users/zsh-history-substring-search
+
 
 # Load Powerlevel10k theme
 if [[ -f ~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme ]]; then
