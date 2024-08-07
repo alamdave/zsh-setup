@@ -1,5 +1,5 @@
 # Function to update the git repo with your Zsh setup
-update_git_repo() {
+updateGitZsh() {
     # Define the source files and directories
     ZSHRC="$HOME/.zshrc"
     P10K="$HOME/.p10k.zsh"
