@@ -5,8 +5,12 @@ createScript() {
     fi
 
     local SCRIPT_NAME="$1"
-    local SCRIPT_PATH="$HOME/scripts/$SCRIPT_NAME"
+    local REPO_DIR="${ZSH_SETUP_DIR:-$HOME/code/zsh-repo}"
+    local REPO_SCRIPTS_DIR="$REPO_DIR/scripts"
+    local HOME_SCRIPTS_DIR="$HOME/scripts"
+    local SCRIPT_PATH="$REPO_SCRIPTS_DIR/$SCRIPT_NAME"
     mkdir -p "$HOME/scripts"
+    mkdir -p "$REPO_SCRIPTS_DIR"
 
     # Choose editor based on what's available
     local EDITOR="${EDITOR:-code}"
@@ -17,6 +21,10 @@ createScript() {
     if ! command -v "$EDITOR" &>/dev/null; then
         echo "Error: No editor found (tried $EDITOR, vim)" >&2
         return 1
+    fi
+
+    if [[ ! -e "$HOME_SCRIPTS_DIR/$SCRIPT_NAME" ]]; then
+        ln -s "$SCRIPT_PATH" "$HOME_SCRIPTS_DIR/$SCRIPT_NAME" 2>/dev/null || true
     fi
 
     "$EDITOR" "$SCRIPT_PATH"

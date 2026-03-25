@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ZSH_USERS_ROOT="${HOME}/code/zsh-users"
+MARLONRICHERT_ROOT="${HOME}/code/marlonrichert"
+POWERLEVEL10K_DIR="${HOME}/.local/share/zsh/powerlevel10k"
+
+clone_or_update() {
+  local repo_url="$1"
+  local target_dir="$2"
+
+  if [[ -d "${target_dir}/.git" ]]; then
+    echo "Updating ${target_dir}"
+    git -C "${target_dir}" pull --ff-only
+  elif [[ -e "${target_dir}" ]]; then
+    echo "Skipping ${target_dir}: path exists but is not a git repository" >&2
+    return 1
+  else
+    echo "Cloning ${repo_url} -> ${target_dir}"
+    mkdir -p "$(dirname "${target_dir}")"
+    git clone --depth=1 "${repo_url}" "${target_dir}"
+  fi
+}
+
+main() {
+  clone_or_update \
+    "https://github.com/zsh-users/zsh-autosuggestions.git" \
+    "${ZSH_USERS_ROOT}/zsh-autosuggestions"
+
+  clone_or_update \
+    "https://github.com/zsh-users/zsh-completions.git" \
+    "${ZSH_USERS_ROOT}/zsh-completions"
+
+  clone_or_update \
+    "https://github.com/zsh-users/zsh-history-substring-search.git" \
+    "${ZSH_USERS_ROOT}/zsh-history-substring-search"
+
+  clone_or_update \
+    "https://github.com/marlonrichert/zsh-autocomplete.git" \
+    "${MARLONRICHERT_ROOT}/zsh-autocomplete"
+
+  clone_or_update \
+    "https://github.com/romkatv/powerlevel10k.git" \
+    "${POWERLEVEL10K_DIR}"
+
+  echo "Bootstrap complete."
+}
+
+main "$@"

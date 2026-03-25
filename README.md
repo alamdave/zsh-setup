@@ -1,165 +1,384 @@
-# Zsh Configuration Setup
+# Zsh Setup
 
-This repository contains my custom Zsh configuration, including the Powerlevel10k theme, Zsh plugins, and custom scripts. The setup is designed to enhance productivity and streamline the terminal workflow across multiple machines.
+This repository contains a portable Zsh setup for Linux and WSL with a fast, deterministic startup path.
 
-## Features
+The goal is simple:
 
-- **Powerlevel10k Theme**: A fast and highly customizable theme for Zsh.
-- **Zinit Plugin Manager**: Easily manage and load plugins to extend Zsh functionality.
-- **Custom Scripts**: Handy scripts to automate common tasks.
-- **Aliases and Configurations**: Useful aliases and Zsh options for improved usability.
+- no plugin manager at shell startup
+- no runtime `git clone` or `git pull`
+- no network calls from `.zshrc`
+- only source plugins and themes that are already installed locally
+
+Plugin installation and updates are handled through `install.sh` and the `bootstrap-zsh` helper.
+
+Quick commands:
+
+- first-time setup: `./install.sh`
+- update plugins later: `bootstrap-zsh`
+
+## What This Repo Gives You
+
+- A clean [`.zshrc`](/home/alam/zsh-setup/.zshrc) that only sources local files
+- A Powerlevel10k prompt via [`.p10k.zsh`](/home/alam/zsh-setup/.p10k.zsh)
+- A bootstrap command for cloning and updating required plugins
+- A small collection of sourced helper functions under [`scripts/`](/home/alam/zsh-setup/scripts)
+- A small `bin/` directory for executable commands
+- Aliases, history tuning, completion setup, and Python/`pyenv` integration
+
+## Design Principles
+
+- Fast startup: no runtime plugin manager
+- Deterministic behavior: fixed local paths for plugins
+- Portable setup: keep config in Git, install dependencies separately
+- Maintainable config: simple shell scripting over clever abstractions
 
 ## Directory Structure
 
+```text
+~/code/zsh-repo/
+├── bin/
+│   └── bootstrap-zsh
+├── .zshrc
+├── .p10k.zsh
+├── install.sh
+├── README.md
+└── scripts/
+    ├── activateEnv.sh
+    ├── createScript.sh
+    ├── listScripts.sh
+    ├── speedtest.sh
+    ├── sysinfo.sh
+    └── updateZsh.sh
 ```
-~/zsh-setup/
-├── .zshrc                     # Zsh configuration
-├── .p10k.zsh                  # Powerlevel10k configuration
-├── scripts/                   # Custom scripts
-│   ├── gitstatus.sh           # Detailed Git status
-│   ├── speedtest.sh           # Test internet Speed connection
-│   ├── updateGitZsh.sh        # Copy current .zshrc/.p10k.zsh and scripts to local git repo and push to remote
-│   ├── sysinfo.sh             # Display system information
-│   ├── createScript.sh        # creates or edit script in the ~/scripts/
-│   ├── activateEnv.sh         # Activate local python ENV, can enter customer VENV folder
-│   └── listScripts.sh         # List custom functions and files in ~/scripts/
-└── install.sh                 # Setup script
+
+## `scripts/` vs `bin/`
+
+Both are valid names, but they serve different purposes.
+
+- `scripts/`
+  Best for shell snippets and function libraries that you want to `source` into your interactive shell.
+
+- `bin/`
+  Best for executable commands you want to run from `PATH`.
+
+For user-level executables on Linux and WSL, the most common default location is:
+
+```text
+~/.local/bin
 ```
 
-## Installation
+That is the conventional place for personal commands. In this repo:
 
-To set up this configuration on a new machine, follow these steps:
+- `scripts/` contains sourced helper functions
+- `bin/` contains executable commands
 
-### Prerequisites
+This separation avoids accidental startup side effects from sourcing executable scripts.
 
-- **Zsh**: Ensure Zsh is installed. If not, install it using the following command:
+## Runtime Plugin Layout
 
-  ```bash
-  sudo apt update && sudo apt install zsh -y
-  ```
+The live shell config expects these local paths:
 
-- **Git**: Ensure Git is installed. If not, install it using the following command:
+- `~/code/zsh-users/zsh-autosuggestions`
+- `~/code/zsh-users/zsh-completions`
+- `~/code/zsh-users/zsh-history-substring-search`
+- `~/code/marlonrichert/zsh-autocomplete`
+- `~/.local/share/zsh/powerlevel10k`
 
-  ```bash
-  sudo apt install git -y
-  ```
+`.zshrc` only sources from those locations. If a plugin is missing, it is simply skipped.
 
-### Setup Instructions
+## Plugins In Use
 
-1. **Clone the Repository**
+- `zsh-autosuggestions`
+  Gives inline command suggestions based on history.
 
-   Clone this repository into your home directory:
+- `zsh-completions`
+  Adds extra completion definitions beyond stock Zsh.
 
-   ```bash
-   git clone https://github.com/alamdave/zsh-setup.git ~/zsh-setup
-   ```
+- `zsh-history-substring-search`
+  Lets the up/down arrows search history by the currently typed prefix.
 
-2. **Run the Install Script**
+- `zsh-autocomplete`
+  Restores command and completion suggestions while you type, including menu-style completion flow.
 
-   Navigate to the `zsh-setup` directory and run the setup script:
+- `powerlevel10k`
+  Provides the prompt theme and Git-aware prompt segments.
 
-   ```bash
-   cd ~/zsh-setup
-   ./install.sh
-   ```
+## Install On a New Machine
 
-   This script will:
+### 1. Clone the repo
 
-   - Install Zinit for managing plugins.
-   - Create symlinks for your Zsh configuration files.
-   - Source custom scripts.
+```bash
+git clone https://github.com/alamdave/zsh-setup.git ~/code/zsh-repo
+cd ~/code/zsh-repo
+```
 
-3. **Change Default Shell to Zsh**
+### 2. Run the installer
 
-   Change your default shell to Zsh if it isn't already:
+```bash
+./install.sh
+```
 
-   ```bash
-   chsh -s $(which zsh)
-   ```
+The installer will:
 
-   **Note:** You may need to restart your terminal session for changes to take effect.
+- install `zsh` and `git` if needed
+- symlink `~/.zshrc` and `~/.p10k.zsh` to the repo copies
+- symlink sourced helper functions into `~/scripts`
+- symlink `bin/bootstrap-zsh` into `~/.local/bin/bootstrap-zsh`
+- clone or update the required plugins and theme
+- optionally switch your default shell to Zsh
 
-### Manual Configuration
+If the installer finds an existing regular file where it needs to place a symlink, it creates a timestamped backup first.
 
-If the `install.sh` script doesn't automatically complete the setup, you can manually configure the environment as follows:
+### 3. Start a new shell
 
-- **Install Zinit**
+```bash
+exec zsh
+```
 
-  ```bash
-  sh -c "$(curl -fsSL https://git.io/zinit-install)"
-  ```
+## Updating Plugins Later
 
-- **Create Symlinks**
+To update the locally installed plugins and theme:
 
-  ```bash
-  ln -sf ~/zsh-setup/.zshrc ~/.zshrc
-  ln -sf ~/zsh-setup/.p10k.zsh ~/.p10k.zsh
-  ```
+```bash
+~/.local/bin/bootstrap-zsh
+```
 
-- **Source Scripts**
+This keeps all plugin update logic out of `.zshrc`.
 
-  Add the following line to your `.zshrc`:
+## Linking the Repo to Your Home Directory
 
-  ```zsh
-  for script in ~/zsh-setup/scripts/*.sh; do
-    source "$script"
-  done
-  ```
+If you want edits in your home directory and repo to stay in sync, use the `updateZsh` helper after installation:
 
-## Usage
+```bash
+source ~/.zshrc
+updateZsh
+```
 
-- **Zsh Configuration**: Your Zsh configuration is loaded from `.zshrc`, and your custom settings are loaded from `.zsh-configs`.
+What `updateZsh` does:
 
-- **Custom Scripts**: You can run any of the scripts located in the `scripts/` directory directly from the command line.
+- symlinks `~/.zshrc` to the repo copy
+- symlinks `~/.p10k.zsh` to the repo copy
+- symlinks repo helper functions into `~/scripts`
+- symlinks `bin/bootstrap-zsh` into `~/.local/bin/bootstrap-zsh`
+- creates timestamped backups before replacing non-symlink files
 
-- **Aliases**: Additional useful aliases are defined in `.zshrc`.
+After that, editing either the home path or the repo path updates the same file because they are linked together.
+
+## User Guide
+
+### Prompt and Theme
+
+Powerlevel10k is loaded from:
+
+```text
+~/.local/share/zsh/powerlevel10k/powerlevel10k.zsh-theme
+```
+
+Prompt appearance is configured in [`.p10k.zsh`](/home/alam/zsh-setup/.p10k.zsh).
+
+What it currently gives you:
+
+- a two-line prompt
+- Git branch and repo state in the prompt
+- command status and execution time
+- current directory shortening for long paths
+- transient prompt support
+- instant prompt support
+
+If you want to change the look:
+
+- edit [`.p10k.zsh`](/home/alam/zsh-setup/.p10k.zsh) directly
+- or run `p10k configure` and review the generated changes
+
+### Completion
+
+Completion is configured in [`.zshrc`](/home/alam/zsh-setup/.zshrc) with:
+
+- `fpath` extended to include `zsh-completions`
+- `compinit -C` for a faster cached completion startup
+- `zsh-autocomplete` for live command and completion suggestions
+- menu selection enabled
+- case-insensitive matching enabled
+
+This gives you:
+
+- broader completion support
+- better interactive completion menus
+- quicker shell startup than a full uncached `compinit`
+
+### History Behavior
+
+The history configuration in [`.zshrc`](/home/alam/zsh-setup/.zshrc) enables:
+
+- large history file size
+- deduplication
+- reduced blank entries
+- incremental append
+- shared history across shells
+
+This means:
+
+- repeated commands are cleaned up more aggressively
+- multiple terminals can share history
+- new commands are available in other sessions sooner
+
+### Python and `pyenv`
+
+The config adds:
+
+- `~/.local/bin` to `PATH`
+- `~/.pyenv/bin` to `PATH` when available
+- lazy `pyenv` initialization
+
+The lazy-loading function means `pyenv` only initializes when you actually use it, which helps keep startup faster.
+
+### Aliases
+
+The repo includes convenience aliases for:
+
+- directory navigation: `..`, `...`, `....`
+- listing files: `l`, `la`, `ll`
+- terminal cleanup: `cls`
+- safer file operations: `rm -i`, `cp -i`, `mv -i`
+- Git shortcuts: `gs`, `ga`, `gc`, `gp`, `gpl`, `gco`, `gb`, `gd`, `gcm`, `gca`
+- config reload/edit helpers: `reload`, `czsh`
+
+### Script Auto-Sourcing
+
+Every `*.sh` file in `~/scripts` is sourced automatically by `.zshrc`.
+
+This allows you to keep personal shell functions in one directory and have them available in every session.
+
+Current helper functions include:
+
+- `activateEnv`
+  Activates a local Python virtual environment in the current directory. Default folder name is `venv`.
+
+- `createScript`
+  Opens or creates a script inside `~/scripts` using `$EDITOR`, `code`, or `vim`.
+
+- `listScripts`
+  Lists available sourced helper functions from files in `~/scripts`.
+
+- `speedtest`
+  Runs `speedtest-cli --simple` if installed.
+
+- `sysinfo`
+  Prints a compact system summary for Linux or macOS.
+
+- `updateZsh`
+  Replaces copy-based syncing with symlinks so your home config and repo stay aligned.
+
+### Keybindings
+
+Current keybindings include:
+
+- `Tab`
+  Complete and cycle through menu suggestions again
+
+- `Ctrl-Y`
+  Accept the current autosuggestion
+
+- `Ctrl-R`
+  Start incremental reverse history search
+
+- Up/Down arrows
+  Search command history by the text already typed on the command line
+
+## Common Customizations
+
+### Add a new alias
+
+Edit [`.zshrc`](/home/alam/zsh-setup/.zshrc) and add it to the aliases section:
+
+```zsh
+alias k='kubectl'
+```
+
+Reload your shell:
+
+```bash
+source ~/.zshrc
+```
+
+### Add a new helper function
+
+Create a new helper function file:
+
+```bash
+createScript myhelper.sh
+```
+
+This creates the file in the repo `scripts/` directory and links it into `~/scripts` when possible.
+
+Add a shell function to that file, then reload Zsh:
+
+```bash
+source ~/.zshrc
+```
+
+### Remove `zsh-history-substring-search`
+
+If you prefer a simpler setup and do not care about history-prefix navigation on arrow keys:
+
+1. Remove the `source` block for `zsh-history-substring-search` in [`.zshrc`](/home/alam/zsh-setup/.zshrc)
+2. Remove the Up/Down `bindkey` lines that depend on it
+3. Delete `~/code/zsh-users/zsh-history-substring-search`
+
+This slightly reduces prompt startup work and plugin surface area.
+
+### Change plugin install paths
+
+If you want to use different local directories, update the path variables near the top of [`.zshrc`](/home/alam/zsh-setup/.zshrc) and keep [`bin/bootstrap-zsh`](/home/alam/zsh-setup/bin/bootstrap-zsh) in sync.
 
 ## Troubleshooting
 
-### Common Issues
+### A plugin is missing
 
-- **Permission Denied**: If you encounter permission issues, ensure your scripts are executable:
+Run:
 
-  ```bash
-  chmod +x ~/zsh-setup/scripts/*.sh
-  ```
+```bash
+~/.local/bin/bootstrap-zsh
+```
 
-- **Zsh Not Default Shell**: Make sure to change your default shell to Zsh with the `chsh` command.
+### Zsh loads but a feature does not work
 
-### Helpful Commands
+Reload the shell and check for syntax errors:
 
-- **Reload Zsh Configuration**: After making changes, run:
+```bash
+source ~/.zshrc
+zsh -n ~/.zshrc
+```
 
-  ```bash
-  source ~/.zshrc
-  ```
+### Completion seems stale
 
-- **Check Git Configuration**: Verify your Git configuration with:
+Delete the completion dump and restart the shell:
 
-  ```bash
-  git config --global --list
-  ```
+```bash
+rm -f ~/.zcompdump*
+exec zsh
+```
 
-## Contributing
+### A helper function is not available
 
-If you have suggestions or improvements, feel free to open a pull request or submit an issue.
+Make sure the script is in `~/scripts` and ends with `.sh`, then reload:
 
-## License
+```bash
+source ~/.zshrc
+```
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+### Prompt looks wrong
+
+Make sure your terminal uses a Nerd Font compatible with Powerlevel10k.
+
+## Notes
+
+- [`install.sh`](/home/alam/zsh-setup/install.sh) is the recommended setup path
+- this repo now prefers direct local sourcing over plugin manager abstractions
 
 ## Acknowledgments
 
-- [Powerlevel10k](https://github.com/romkatv/powerlevel10k) for the amazing prompt theme.
-- [Zinit](https://github.com/zdharma-continuum/zinit) for plugin management.
-
-## Plugins
-
-- [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete) by marlonrichert
-- [fast-syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting) by zdharma-continuum
-- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) by zsh-users
-- [zsh-completions](https://github.com/zsh-users/zsh-completions) by zsh-users
-- [zsh-git-prompt](https://github.com/olivierverdier/zsh-git-prompt) by olivierverdier
-- [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search) by zsh-users
-
-Feel free to modify and expand this `README.md` to suit your specific setup and preferences. If you have any questions or need further assistance, please let me know!
+- [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
+- [zsh-completions](https://github.com/zsh-users/zsh-completions)
+- [zsh-history-substring-search](https://github.com/zsh-users/zsh-history-substring-search)
