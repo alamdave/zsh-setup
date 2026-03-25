@@ -101,6 +101,7 @@ setopt auto_cd
 setopt EXTENDED_GLOB
 setopt GLOB_DOTS
 setopt NO_CLOBBER
+setopt APPEND_CREATE
 
 # -----------------------------
 # Path & Python environment
