@@ -104,7 +104,7 @@ fi
 if [ "$SHELL" != "$(which zsh)" ]; then
   echo "Changing default shell to Zsh..."
   chsh -s "$(which zsh)"
-fig
+fi
 
 echo "Please restart your terminal session for changes to take effect."
 echo "Please also install the correct font if not done so already: https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"

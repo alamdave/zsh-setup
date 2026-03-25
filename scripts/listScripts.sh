@@ -1,33 +1,39 @@
-# Directory containing the script files
 SCRIPT_DIR="$HOME/scripts"
 
-# Function to list all functions in a given .sh file
-list_custom_functions() {
+# Extract function names from a file
+_list_functions_from_file() {
     local file="$1"
-    # Use grep to find function definitions and extract their names
     grep -E '^[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\(\)[[:space:]]*\{' "$file" | \
     sed -E 's/^[[:space:]]*([a-zA-Z_][a-zA-Z0-9_]*)[[:space:]]*\(\)[[:space:]]*\{/\1/'
 }
 
-# Function to list all functions in all .sh files in the directory
+# List all available scripts and functions
 listScripts() {
-    # Check if the directory exists
     if [ ! -d "$SCRIPT_DIR" ]; then
-        echo "Directory $SCRIPT_DIR does not exist."
-        exit 1
+        echo "Error: Scripts directory not found: $SCRIPT_DIR" >&2
+        return 1
     fi
 
-    # Check if there are any .sh files in the directory
-    sh_files=("$SCRIPT_DIR"/*.sh)
-    if [ "${#sh_files[@]}" -eq 0 ]; then
-        echo "No .sh files found in $SCRIPT_DIR."
-        exit 0
+    local sh_files=("$SCRIPT_DIR"/*.sh)
+    if [ ! -e "${sh_files[0]}" ]; then
+        echo "No scripts found in $SCRIPT_DIR"
+        return 0
     fi
 
-    # Iterate over all .sh files in the directory
+    echo "Available Scripts & Functions"
+    echo "============================="
+    echo ""
+
     for script_file in "${sh_files[@]}"; do
-        echo "Functions in $script_file:"
-        list_custom_functions "$script_file"
-        echo ""
+        local filename=$(basename "$script_file")
+        local functions=$(_list_functions_from_file "$script_file")
+
+        if [ -n "$functions" ]; then
+            echo "$filename:"
+            while IFS= read -r func; do
+                echo "  → $func"
+            done <<< "$functions"
+            echo ""
+        fi
     done
 }

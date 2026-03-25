@@ -1,19 +1,18 @@
 # Function to activate a virtual environment
-activate_env() {
-    # Use the provided argument as the virtual environment name, or use the default
+activateEnv() {
     local VENV_NAME="${1:-venv}"
-    local DIR=$(pwd)
-    #env directory
-    local VENV_DIR="$DIR/$VENV_NAME"
-    
+    local VENV_DIR="$(pwd)/$VENV_NAME"
 
-    # Check if the virtual environment directory exists
-    if [ -d "$VENV_DIR" ]; then
-        # Activate the virtual environment
-        source "$VENV_DIR/bin/activate"
-        echo "Activated virtual environment: $VENV_DIR"
-    else
-        echo "Virtual environment '$VENV_DIR' not found!"
+    if [ ! -d "$VENV_DIR" ]; then
+        echo "Error: Virtual environment not found at $VENV_DIR" >&2
         return 1
     fi
+
+    if [ ! -f "$VENV_DIR/bin/activate" ]; then
+        echo "Error: Invalid virtual environment (missing bin/activate)" >&2
+        return 1
+    fi
+
+    source "$VENV_DIR/bin/activate"
+    echo "Activated: $VENV_DIR"
 }

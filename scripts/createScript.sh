@@ -1,17 +1,24 @@
-
-# Check if a script name is provided
-createScript () {
+createScript() {
     if [ -z "$1" ]; then
-        echo "Usage: $0 <scriptname>"
-        exit 1
+        echo "Usage: createScript <script_name>" >&2
+        return 1
     fi
 
-    # Script name without the extension
-    SCRIPT_NAME="$1"
-    SCRIPT_PATH="$HOME/scripts/${SCRIPT_NAME}"
-
-    # Create the .scripts directory if it doesn't exist
+    local SCRIPT_NAME="$1"
+    local SCRIPT_PATH="$HOME/scripts/$SCRIPT_NAME"
     mkdir -p "$HOME/scripts"
 
-    code ${SCRIPT_PATH}        
+    # Choose editor based on what's available
+    local EDITOR="${EDITOR:-code}"
+    if ! command -v "$EDITOR" &>/dev/null; then
+        EDITOR="vim"
+    fi
+
+    if ! command -v "$EDITOR" &>/dev/null; then
+        echo "Error: No editor found (tried $EDITOR, vim)" >&2
+        return 1
+    fi
+
+    "$EDITOR" "$SCRIPT_PATH"
+    echo "Created/edited: $SCRIPT_PATH"
 }

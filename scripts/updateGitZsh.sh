@@ -48,18 +48,31 @@ updateGitZsh() {
         echo "Initialized a new git repository."
     fi
 
-    # Add changes to the git repository
+    # Set or update remote URL (idempotent)
+    if ! git remote get-url origin &>/dev/null; then
+        git remote add origin git@github.com:alamdave/zsh-setup.git
+    else
+        git remote set-url origin git@github.com:alamdave/zsh-setup.git
+    fi
+
+    # Add changes and commit
     git add .
-    echo "Staged all changes for commit."
-
-    # Commit the changes with a message
     TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
-    git commit -m "Update: $TIMESTAMP"
-    echo "Committed changes with timestamp $TIMESTAMP."
 
-    # You can add a remote repository URL to push changes if needed
-    git remote add origin git@github.com:alamdave/zsh-setup.git
-    git push origin main
+    if git diff-index --quiet HEAD --; then
+        echo "No changes to commit."
+    else
+        git commit -m "Update: $TIMESTAMP"
+        echo "Committed changes with timestamp $TIMESTAMP."
+    fi
+
+    # Push to remote
+    if git rev-parse --verify main >/dev/null 2>&1; then
+        git push origin main
+        echo "Pushed to remote."
+    else
+        echo "No commits to push or main branch doesn't exist."
+    fi
 
     echo "Backup and update completed."
 }

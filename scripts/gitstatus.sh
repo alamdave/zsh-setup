@@ -1,17 +1,18 @@
 gitstatus() {
-  if [ -d .git ] || git rev-parse --git-dir > /dev/null 2>&1; then
-    branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "(detached)")
-    status=$(git status -s)
-    echo "On branch: $branch"
-    if [ -n "$status" ]; then
-      echo "Changes:"
-      echo "$status"
-    else
-      echo "Working directory clean"
-    fi
+  if ! git rev-parse --git-dir &>/dev/null; then
+    echo "Error: Not a git repository" >&2
+    return 1
+  fi
+
+  local branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "(detached)")
+  local status=$(git status -s)
+
+  echo "Branch: $branch"
+
+  if [ -z "$status" ]; then
+    echo "Status: Working directory clean"
   else
-    echo "Not a Git repository"
+    echo "Status:"
+    echo "$status"
   fi
 }
-
-# To use: run `gitstatus` in any Git repository
